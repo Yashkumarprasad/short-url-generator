@@ -27,8 +27,14 @@ class LoginController extends Controller
     }
     public function loginSubmit(Request $request)
     {
-        $check_user = User::where('email', $request->email)->where(function ($query) {
-            $query->whereIn('user_type', [SUPER_ADMIN, ADMIN, MEMBER]);
+        $request->validate([
+            'role' => 'required|in:super_admin,admin,member',
+            'email' => 'required|email',
+            'password' => 'required|string'
+        ]);
+
+        $check_user = User::where('email', $request->email)->where(function ($query) use ($request) {
+            $query->where('user_type', $request->role);
         })->first();
         if (!is_null($check_user)) {
 

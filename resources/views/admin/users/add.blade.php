@@ -61,29 +61,6 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="password">Password <span class="required_field">*</span></label>
-                                    <input type="password" name="password"
-                                        class="form-control @error('password') is-invalid @enderror" id="password"
-                                        placeholder="Enter Password"
-                                        value="{{ old('password', request()->input('password')) }}">
-                                    @error('password')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="password_confirmation">Confirm Password <span
-                                            class="required_field">*</span></label>
-                                    <input type="password" name="password_confirmation"
-                                        class="form-control @error('password_confirmation') is-invalid @enderror"
-                                        id="password_confirmation" placeholder="Enter Confirm Password"
-                                        value="{{ old('password_confirmation', request()->input('password_confirmation')) }}">
-                                    @error('password_confirmation')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
                                 <button type="submit" class="btn btn-primary me-2">Submit</button>
                                 <a href="{{ route('admin.user.list') }}" class="btn btn-secondary">Cancel</a>
                             </form>

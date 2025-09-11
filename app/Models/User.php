@@ -46,28 +46,29 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function paginate($count = 10, $formData = array())
+    public function paginate($count = 10)
     {
         $where_array = [];
 
+        $loginAdmin = Auth::guard('admin')->user();
+
         $query = $this->where($where_array);
 
-        $query->when(!empty($formData['parent_id']), function ($q) use ($formData) {
-            return $q->where('parent_id', $formData['parent_id']);
-        });
-
-        $query->when(isset($formData['user_type']) && (is_array($formData['user_type']) || !empty($formData['user_type'])), function ($q) use ($formData) {
-            if (is_array($formData['user_type'])) {
-                return $q->whereIn('user_type', $formData['user_type']);
-            } else {
-                return $q->where('user_type', $formData['user_type']);
-            }
-        });
+        if ($loginAdmin->user_type == ADMIN) {
+            $query->where(function ($q) use ($loginAdmin) {
+                $q->where('parent_id', $loginAdmin->id)
+                    ->orWhere('parent_id', $loginAdmin->parent_id);
+            })
+                ->whereIn('user_type', [ADMIN, MEMBER]);
+        } else {
+            $query->where('user_type', ADMIN)
+                ->whereNull('parent_id');
+        }
 
         $query->when(Auth::guard('admin')->user(), function ($q) {
             return $q->where('id', '!=', Auth::guard('admin')->user()->id);
         });
 
-        return $query->paginate($count);
+        return $query->latest()->paginate($count);
     }
 }

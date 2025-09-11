@@ -16,7 +16,7 @@ class ShortUrl extends Model
         'code'
     ];
 
-    public function paginate($count = 10, $formData = [])
+    public function paginate($count = 10)
     {
         $loginAdmin = Auth::guard('admin')->user();
 
@@ -25,7 +25,10 @@ class ShortUrl extends Model
             $query->where('user_type', ADMIN);
         })
             ->when($loginAdmin->user_type == ADMIN, function ($query) use ($loginAdmin) {
-                $query->where('parent_id', $loginAdmin->id)
+                $query->where(function ($parent_id_query) use ($loginAdmin) {
+                    $parent_id_query->where('parent_id', $loginAdmin->id)
+                        ->orWhere('parent_id', $loginAdmin->parent_id);
+                })
                     ->whereIn('user_type', [ADMIN, MEMBER]);
             })
             ->get();
@@ -34,7 +37,6 @@ class ShortUrl extends Model
 
         $query = $this->newQuery();
 
-        // Apply user-based scoping
         if (in_array($loginAdmin->user_type, [ADMIN, MEMBER])) {
             if ($loginAdmin->user_type == ADMIN) {
                 $query->where(function ($q) use ($loginAdmin, $userIds) {
@@ -46,7 +48,7 @@ class ShortUrl extends Model
             }
         }
 
-        return $query->paginate($count);
+        return $query->latest()->paginate($count);
     }
 
 }

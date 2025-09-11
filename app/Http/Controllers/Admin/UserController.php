@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -20,20 +21,9 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
-        if (Auth::guard('admin')->user()->user_type != SUPER_ADMIN) {
-            $formData = array(
-                'parent_id' => Auth::guard('admin')->user()->id,
-                'user_type' => [ADMIN, MEMBER]
-            );
-        } else {
-            $formData = [
-                'user_type' => ADMIN
-            ];
-        }
-
         $requestData = $request->all();
 
-        $users = $this->users->paginate(10, $formData);
+        $users = $this->users->paginate(10);
 
         $title = 'Manage Users';
 
@@ -66,14 +56,18 @@ class UserController extends Controller
 
         $parent_id = ($loginAdmin->user_type == SUPER_ADMIN) ? NULL : $loginAdmin->id;
 
+        $password = Str::random(8);
+
         User::create([
             'parent_id' => $parent_id,
             'user_type' => $user_type,
             'name' => $requestData['name'],
             'email' => $requestData['email'],
-            'password' => Hash::make($requestData['password'])
+            'password' => Hash::make($password)
         ]);
 
-        return redirect()->route('admin.user.list')->with('success', 'User added successfully.');
+        $user = ($loginAdmin->user_type == SUPER_ADMIN) ? "Client" : "Team Member";
+
+        return redirect()->route('admin.user.list')->with('success', $user . ' added successfully. Please share this password = ' . $password);
     }
 }

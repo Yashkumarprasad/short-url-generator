@@ -32,25 +32,7 @@ $('#add_user').bootstrapValidator({
                 }
             }
         },
-        email: emailValidators,
-        password: {
-            validators: {
-                notEmpty: {
-                    message: 'New Password is required and cannot be empty.'
-                }
-            }
-        },
-        password_confirmation: {
-            validators: {
-                notEmpty: {
-                    message: 'Confirm Password is required and cannot be empty.'
-                },
-                identical: {
-                    field: 'password',
-                    message: 'Confirm Password must be same as password'
-                }
-            }
-        },
+        email: emailValidators
     }
 });
 

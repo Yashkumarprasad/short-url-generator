@@ -14,10 +14,14 @@ class DashboardController extends Controller
         $loginAdmin = Auth::guard('admin')->user();
 
         $users = User::when($loginAdmin->user_type == SUPER_ADMIN, function ($query) {
-            $query->where('user_type', ADMIN);
+            $query->where('user_type', ADMIN)
+                ->whereNull('parent_id');
         })
             ->when($loginAdmin->user_type == ADMIN, function ($query) use ($loginAdmin) {
-                $query->where('parent_id', $loginAdmin->id)
+                $query->where(function ($parent_id_query) use ($loginAdmin) {
+                    $parent_id_query->where('parent_id', $loginAdmin->id)
+                        ->orWhere('parent_id', $loginAdmin->parent_id);
+                })
                     ->whereIn('user_type', [ADMIN, MEMBER]);
             })
             ->get();

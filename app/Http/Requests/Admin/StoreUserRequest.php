@@ -30,8 +30,6 @@ class StoreUserRequest extends FormRequest
         if (Auth::guard('admin')->user()->user_type != SUPER_ADMIN) {
             $rules['role'] = 'required';
         }
-
-        $rules['password'] = 'required|string|confirmed';
         
         $loginUser = Auth::guard('admin')->user();
         $role = $this->input('role');

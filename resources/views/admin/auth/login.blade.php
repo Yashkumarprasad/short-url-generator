@@ -20,7 +20,22 @@
                                 Sign in to continue.</h6>
                             <form class="pt-3" method="POST" action="{{ route('admin.login.submit') }}" id="admin_login">
                                 @csrf
+
                                 <div class="form-group">
+                                    <label for="role">Role <span class="required_field">*</span></label>
+                                    <select name="role" id="role" class="form-control">
+                                        <option value="">--Select Role--</option>
+                                        <option value="{{ SUPER_ADMIN }}">Super Admin</option>
+                                        <option value="{{ ADMIN }}">Admin</option>
+                                        <option value="{{ MEMBER }}">Member</option>
+                                    </select>
+                                    @error('role')
+                                        <div class="help-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email <span class="required_field">*</span></label>
                                     <input type="email" name="email"
                                         class="form-control @error('email') is-invalid @enderror" id="exampleInputEmail1"
                                         value="{{ old('email') }}" placeholder="Enter Email" autofocus>
@@ -30,6 +45,7 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="password">Password <span class="required_field">*</span></label>
                                     <input type="password" name="password"
                                         class="form-control @error('password') is-invalid @enderror"
                                         id="exampleInputPassword1" placeholder="Enter Password">
@@ -64,6 +80,13 @@
                 validating: 'glyphicon glyphicon-refresh'
             },
             fields: {
+                role: {
+                    validators: {
+                        notEmpty: {
+                            message: "The Role is required"
+                        },
+                    }
+                },
                 email: {
                     validators: {
                         notEmpty: {
