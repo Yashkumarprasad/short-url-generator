@@ -49,7 +49,7 @@ php artisan db:seed
 Email: superadmin@sembark.com
 Password: #sembark@superadmin1234
 
-php artisan serve or http://localhost/your-project
+http://localhost/your-project
 
 To access admin go on 
 
